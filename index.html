@@ -1,0 +1,1548 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --card-bg: #131313;
+    --card-bg-raised: #1A1A1A;
+    --ink: #F5F5F3;
+    --ink-soft: #9A9A96;
+    --ink-faint: #6B6B67;
+    --line: rgba(245,245,243,0.35);
+    --line-soft: rgba(245,245,243,0.14);
+    --beacon: #FFB454;
+    --beacon-hot: #FF6B54;
+    --xp: #FFD166;
+    --streak: #FF6B54;
+    --ring-track: rgba(245,245,243,0.10);
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    #snagback-root *, #snagback-root *::before, #snagback-root *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  #snagback-root {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    transition: background 0.8s ease;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  #snagback-root.alert-mode {
+    background: radial-gradient(circle at 50% 0%, #1A1210 0%, var(--bg) 60%);
+  }
+
+  #snagback-root :focus-visible {
+    outline: 2px solid var(--beacon);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    padding: 22px 18px 40px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Top bar ---- */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .brand { display: flex; align-items: baseline; gap: 9px; }
+  .brand-mark {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: transparent; border: 1.5px solid var(--ink); flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(245,245,243,0.08);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  .brand-mark.hot {
+    background: var(--beacon-hot); border-color: var(--beacon-hot);
+    box-shadow: 0 0 0 4px rgba(255,107,84,0.22);
+    animation: markpulse 1.2s ease-in-out infinite;
+  }
+  @keyframes markpulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+
+  h1.title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin: 0; color: var(--ink); }
+
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  .stat-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: transparent; border: 1px solid var(--line); border-radius: 20px;
+    padding: 6px 11px 6px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; color: var(--ink);
+  }
+  .stat-pill.streak-hot { border-color: var(--streak); color: var(--streak); }
+
+  .settings-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--line); background: transparent; color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; flex-shrink: 0;
+  }
+  .settings-btn:hover { border-color: var(--ink); }
+
+  .subtitle { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 18px; line-height: 1.5; }
+
+  /* ---- Hero: next-up ring ---- */
+  .hero-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--line-soft);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
+  }
+  .hero-wrap.hero-hot { border-color: var(--beacon-hot); }
+  .hero-ring-svg { flex-shrink: 0; }
+  .hero-ring-track { fill: none; stroke: var(--ring-track); stroke-width: 6; }
+  .hero-ring-fill {
+    fill: none; stroke: var(--beacon); stroke-width: 6; stroke-linecap: round;
+    transform: rotate(-90deg); transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+  }
+  .hero-hot .hero-ring-fill { stroke: var(--beacon-hot); }
+  .hero-ring-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 600; fill: var(--ink);
+    text-anchor: middle; dominant-baseline: middle;
+  }
+  .hero-empty-icon { font-size: 22px; opacity: 0.7; }
+  .hero-body { flex: 1; min-width: 0; }
+  .hero-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 4px; }
+  .hero-task { font-size: 16px; font-weight: 600; color: var(--ink); word-wrap: break-word; }
+  .hero-sub { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+
+  /* ---- Level bar ---- */
+  .level-bar-wrap { margin-bottom: 18px; }
+  .level-bar-label { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft); margin-bottom: 5px; letter-spacing: 0.02em; }
+  .level-bar-track { height: 8px; background: var(--card-bg); border: 1px solid var(--line-soft); border-radius: 6px; overflow: hidden; }
+  .level-bar-fill { height: 100%; background: linear-gradient(90deg, var(--xp), var(--beacon)); border-radius: 6px; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+  .badge-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .badge-chip {
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--ink);
+    background: var(--card-bg-raised); border: 1px solid var(--line-soft);
+    border-radius: 20px; padding: 4px 10px; display: flex; align-items: center; gap: 4px;
+  }
+
+  /* ---- Input ---- */
+  .input-wrap {
+    background: var(--card-bg); border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 4px; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+  }
+  #snagback-input { flex: 1; border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 15px; padding: 12px 10px; color: var(--ink); }
+  #snagback-input::placeholder { color: var(--ink-faint); }
+
+  .mic-btn, .add-btn {
+    border: 1px solid var(--line-soft); background: transparent; color: var(--ink);
+    width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
+  }
+  .mic-btn:hover, .add-btn:hover { border-color: var(--ink); }
+  .mic-btn:active, .add-btn:active { transform: scale(0.94); }
+  .mic-btn.listening { background: var(--beacon); color: #0A0A0A; border-color: var(--beacon); }
+
+  .parse-preview { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink); min-height: 18px; padding: 0 6px; margin-bottom: 14px; }
+  .parse-preview.empty-hint { color: var(--ink-faint); }
+
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .example-chip { font-size: 11.5px; color: var(--ink); background: transparent; border: 1px solid var(--line-soft); border-radius: 20px; padding: 6px 12px; cursor: pointer; }
+  .example-chip:hover { border-color: var(--ink); }
+
+  .section-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
+
+  .empty-state { border: 1.5px dashed var(--line); border-radius: 14px; padding: 32px 20px; text-align: center; color: var(--ink-soft); font-size: 13.5px; line-height: 1.6; }
+
+  .reminder-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .reminder-card {
+    background: var(--card-bg); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 16px 16px;
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    position: relative; overflow: hidden;
+  }
+  .reminder-card.due { border-color: var(--beacon); box-shadow: 0 0 0 1px rgba(255,180,84,0.25), 0 0 24px rgba(255,180,84,0.08); }
+  .reminder-card.overdue { border-color: var(--beacon-hot); box-shadow: 0 0 0 1px rgba(255,107,84,0.3), 0 0 26px rgba(255,107,84,0.12); animation: shake 0.4s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+  .card-top { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+  .cat-icon {
+    width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    background: var(--card-bg-raised); border: 1px solid var(--line-soft); margin-top: 1px;
+  }
+  .reminder-body { flex: 1; min-width: 0; }
+  .reminder-text { font-size: 15px; font-weight: 500; margin-bottom: 3px; word-wrap: break-word; color: var(--ink); }
+  .reminder-meta { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-soft); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .reminder-card.due .reminder-meta, .reminder-card.overdue .reminder-meta { color: var(--beacon-hot); font-weight: 500; }
+  .repeat-tag { font-size: 10px; border: 1px solid var(--line-soft); border-radius: 8px; padding: 1px 6px; color: var(--ink-soft); }
+
+  .card-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
+  .card-actions-row { display: flex; gap: 6px; }
+  .ack-btn, .snooze-btn, .delete-btn {
+    border: 1.5px solid var(--line); background: transparent; color: var(--ink);
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; padding: 7px 12px;
+    border-radius: 9px; cursor: pointer; flex-shrink: 0; white-space: nowrap;
+  }
+  .snooze-btn, .delete-btn { font-size: 11px; padding: 6px 10px; font-weight: 600; color: var(--ink-soft); }
+  .reminder-card.due .ack-btn, .reminder-card.overdue .ack-btn { background: var(--beacon); color: #0A0A0A; border-color: var(--beacon); }
+  .reminder-card.overdue .ack-btn { background: var(--beacon-hot); border-color: var(--beacon-hot); }
+  .ack-btn:active, .snooze-btn:active, .delete-btn:active { transform: scale(0.95); }
+
+  .time-track { height: 6px; background: transparent; border: 1px solid var(--line-soft); border-radius: 4px; overflow: hidden; }
+  .time-fill { height: 100%; border-radius: 4px; background: var(--ink-soft); transition: width 1s linear, background 0.4s ease; }
+  .reminder-card.due .time-fill { background: var(--beacon); }
+  .reminder-card.overdue .time-fill { background: var(--beacon-hot); }
+
+  .toolbar-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 8px; }
+  .sound-toggle {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--ink-soft);
+    background: transparent; border: 1px solid var(--line-soft); border-radius: 20px; padding: 6px 12px;
+    cursor: pointer; display: flex; align-items: center; gap: 5px;
+  }
+  .sound-toggle.on { border-color: var(--ink); color: var(--ink); }
+
+  /* ---- Undo toast ---- */
+  .undo-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--card-bg-raised); border: 1px solid var(--line); color: var(--ink);
+    font-size: 13px; padding: 10px 12px 10px 16px; border-radius: 30px;
+    display: flex; align-items: center; gap: 12px; opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000; white-space: nowrap;
+  }
+  .undo-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .undo-btn { background: transparent; border: none; color: var(--beacon); font-weight: 700; font-size: 13px; cursor: pointer; padding: 6px 8px; }
+
+  /* ---- Settings drawer ---- */
+  .settings-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1100;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .settings-overlay.open { opacity: 1; pointer-events: auto; }
+  .settings-sheet {
+    width: 100%; max-width: 420px; background: var(--card-bg); border: 1px solid var(--line-soft);
+    border-bottom: none; border-radius: 20px 20px 0 0; padding: 22px 20px 30px;
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .settings-overlay.open .settings-sheet { transform: translateY(0); }
+  .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .settings-header h2 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin: 0; }
+  .settings-close { background: transparent; border: 1px solid var(--line); color: var(--ink); width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+  .settings-row:last-of-type { border-bottom: none; }
+  .settings-row-label { font-size: 13.5px; color: var(--ink); }
+  .settings-row-sub { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+
+  .switch { width: 42px; height: 24px; border-radius: 20px; border: 1px solid var(--line); background: transparent; position: relative; cursor: pointer; flex-shrink: 0; }
+  .switch-knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-soft); transition: transform 0.2s ease, background 0.2s ease; }
+  .switch.on { border-color: var(--beacon); }
+  .switch.on .switch-knob { transform: translateX(18px); background: var(--beacon); }
+
+  .intensity-group { display: flex; gap: 6px; }
+  .intensity-btn { font-size: 11px; font-family: 'IBM Plex Mono', monospace; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line-soft); background: transparent; color: var(--ink-soft); cursor: pointer; }
+  .intensity-btn.selected { border-color: var(--beacon); color: var(--beacon); }
+
+  .settings-danger { margin-top: 16px; width: 100%; background: transparent; border: 1px solid var(--beacon-hot); color: var(--beacon-hot); font-size: 12.5px; font-weight: 600; padding: 10px; border-radius: 10px; cursor: pointer; }
+
+  /* ---- Donate + suggest sections (mostly unchanged) ---- */
+  .donate-section, .suggest-section {
+    margin-top: 16px; background: var(--card-bg); border: 1.5px solid var(--line); border-radius: 14px; padding: 18px 16px;
+  }
+  .donate-title { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; margin: 0 0 6px; color: var(--ink); }
+  .donate-sub { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 0 0 14px; }
+  .donate-presets { display: flex; gap: 8px; margin-bottom: 10px; }
+  .donate-chip { flex: 1; background: transparent; border: 1.5px solid var(--line-soft); color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; padding: 10px 0; border-radius: 10px; cursor: pointer; transition: border-color 0.15s ease, background 0.15s ease; }
+  .donate-chip:hover { border-color: var(--ink); }
+  .donate-chip.selected { background: var(--ink); color: #0A0A0A; border-color: var(--ink); }
+
+  .donate-custom-row { display: flex; align-items: center; border: 1.5px solid var(--line-soft); border-radius: 10px; margin-bottom: 10px; padding: 0 4px 0 12px; background: var(--bg); }
+  .donate-custom-symbol { color: var(--ink-soft); font-family: 'IBM Plex Mono', monospace; font-size: 13px; margin-right: 4px; }
+  #donate-custom-input { flex: 1; border: none; outline: none; background: transparent; color: var(--ink); font-family: 'Inter', sans-serif; font-size: 14px; padding: 10px 8px; min-width: 0; }
+  #donate-custom-input::placeholder { color: var(--ink-faint); }
+  .donate-custom-row.active { border-color: var(--ink); }
+
+  .donate-give-btn { width: 100%; background: var(--beacon); color: #0A0A0A; border: none; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 14px; padding: 12px 0; border-radius: 10px; cursor: pointer; margin-bottom: 8px; }
+  .donate-give-btn:active { transform: scale(0.98); }
+  .donate-status { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); min-height: 14px; margin-bottom: 6px; }
+
+  .donate-setup { margin-top: 10px; }
+  .donate-setup summary { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft); cursor: pointer; letter-spacing: 0.02em; }
+  .donate-setup summary:hover { color: var(--ink); }
+  .donate-setup-body { padding-top: 10px; }
+  .donate-setup-copy { font-size: 11.5px; color: var(--ink-soft); line-height: 1.5; margin: 0 0 8px; }
+  .donate-link-row { display: flex; gap: 6px; }
+  #donate-link-input { flex: 1; border: 1px solid var(--line-soft); background: var(--bg); color: var(--ink); border-radius: 10px; padding: 9px 11px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
+  #donate-link-input:focus { border-color: var(--ink); }
+  .donate-link-save { border: 1.5px solid var(--line); background: transparent; color: var(--ink); font-weight: 700; font-size: 12px; padding: 0 14px; border-radius: 10px; cursor: pointer; }
+  .donate-link-save:active { transform: scale(0.96); }
+
+  .suggest-input { width: 100%; background: var(--bg); border: 1.5px solid var(--line-soft); border-radius: 10px; color: var(--ink); font-family: 'Inter', sans-serif; font-size: 13.5px; padding: 10px 12px; resize: vertical; outline: none; margin-bottom: 10px; }
+  .suggest-input:focus { border-color: var(--ink); }
+  .suggest-input::placeholder { color: var(--ink-faint); }
+  .suggest-list-wrap { margin-top: 16px; }
+  .suggest-list-label { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
+  .suggest-list { display: flex; flex-direction: column; gap: 8px; }
+  .suggest-item { border: 1px solid var(--line-soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.5; color: var(--ink); }
+  .suggest-item-time { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-soft); margin-top: 4px; }
+  .suggest-empty { font-size: 12px; color: var(--ink-soft); }
+
+  .disclosure { margin-top: 14px; font-size: 11px; color: var(--ink-faint); line-height: 1.55; border-top: 1px dashed var(--line-soft); padding-top: 12px; }
+  .footnote { margin-top: 22px; font-size: 11.5px; color: #5C5C58; line-height: 1.6; text-align: center; }
+
+  .burst-piece { position: fixed; top: 0; left: 0; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 999; }
+
+  /* ---- Onboarding ---- */
+  .onboarding-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1200;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 1; transition: opacity 0.3s ease;
+  }
+  .onboarding-overlay.hidden { opacity: 0; pointer-events: none; }
+  .onboarding-sheet {
+    width: 100%; max-width: 340px; background: var(--card-bg-raised);
+    border: 1px solid var(--line-soft); border-radius: 20px; padding: 28px 24px 22px;
+    text-align: center;
+  }
+  .onboarding-icon { font-size: 34px; margin-bottom: 14px; }
+  .onboarding-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin: 0 0 10px; color: var(--ink); }
+  .onboarding-copy { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 22px; min-height: 66px; }
+  .onboarding-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .onboarding-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--line-soft); transition: background 0.2s ease, transform 0.2s ease; }
+  .onboarding-dots .dot.active { background: var(--beacon); transform: scale(1.3); }
+  .onboarding-actions { display: flex; justify-content: space-between; align-items: center; }
+  .onboarding-skip { background: transparent; border: none; color: var(--ink-soft); font-size: 12.5px; cursor: pointer; padding: 8px; }
+  .onboarding-next { background: var(--beacon); color: #0A0A0A; border: none; font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+  .onboarding-next:active { transform: scale(0.97); }
+
+  /* ---- Notification permission prompt ---- */
+  .notif-prompt {
+    background: var(--card-bg); border: 1.5px solid var(--beacon); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .notif-prompt-icon { font-size: 20px; flex-shrink: 0; }
+  .notif-prompt-body { flex: 1; min-width: 0; }
+  .notif-prompt-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .notif-prompt-sub { font-size: 11.5px; color: var(--ink-soft); line-height: 1.4; }
+  .notif-prompt-btn { background: var(--beacon); color: #0A0A0A; border: none; font-weight: 700; font-size: 12px; padding: 8px 14px; border-radius: 9px; cursor: pointer; flex-shrink: 0; white-space: nowrap; }
+  .notif-prompt-dismiss { background: transparent; border: none; color: var(--ink-faint); font-size: 16px; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+  /* ---- Legal modal ---- */
+  .legal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1150;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .legal-overlay.open { opacity: 1; pointer-events: auto; }
+  .legal-sheet {
+    width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto;
+    background: var(--card-bg-raised); border: 1px solid var(--line-soft); border-radius: 16px; padding: 22px 20px;
+  }
+  .legal-sheet h3 { font-family: 'Fraunces', serif; font-size: 17px; margin: 0 0 12px; color: var(--ink); }
+  .legal-sheet p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; margin: 0 0 10px; }
+  .legal-close-btn { margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 12.5px; padding: 10px; border-radius: 10px; cursor: pointer; }
+
+  .disclaimer-line { font-size: 11px; color: var(--ink-faint); line-height: 1.5; text-align: center; margin: 10px 0 4px; }
+  .legal-links { display: flex; justify-content: center; gap: 14px; margin-top: 8px; }
+  .legal-link-btn { background: transparent; border: none; color: var(--ink-soft); font-size: 11px; text-decoration: underline; cursor: pointer; padding: 4px; }
+
+  /* ---- View toggle (PC / Mobile preview) ---- */
+  .view-toggle-btn {
+    position: fixed; top: 16px; right: 16px; z-index: 1300;
+    background: var(--card-bg-raised); border: 1px solid var(--line); color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; font-weight: 600;
+    padding: 8px 14px; border-radius: 20px; cursor: pointer;
+  }
+  .view-toggle-btn:hover { border-color: var(--beacon); }
+
+  /* Default (mobile preview): render a phone-like bezel on larger screens */
+  #snagback-root { padding: 40px 20px; align-items: flex-start; }
+  #snagback-root.mode-mobile {
+    background: radial-gradient(circle at 50% 20%, #232323 0%, #141414 70%);
+  }
+  #snagback-root.mode-mobile .device-mockup {
+    position: relative;
+    width: 390px;
+    height: 844px;
+    background: #050505;
+    border-radius: 46px;
+    border: 10px solid #050505;
+    box-shadow: 0 0 0 2px rgba(245,245,243,0.08), 0 30px 60px rgba(0,0,0,0.6);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  #snagback-root.mode-mobile .device-mockup::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 24px; background: #050505; border-radius: 0 0 16px 16px; z-index: 10;
+  }
+  #snagback-root.mode-mobile .phone {
+    width: 100%; height: 100%; min-height: 0; max-width: none;
+    overflow-y: auto; padding-top: 34px;
+  }
+
+  /* PC view: no bezel, full-width comfortable reading layout */
+  #snagback-root.mode-pc {
+    padding: 40px 24px;
+    background: var(--bg);
+  }
+  #snagback-root.mode-pc .device-mockup {
+    width: 100%; max-width: 760px; height: auto; background: transparent;
+    border: none; border-radius: 0; box-shadow: none; overflow: visible;
+  }
+  #snagback-root.mode-pc .device-mockup::before { display: none; }
+  #snagback-root.mode-pc .phone {
+    max-width: 760px; min-height: auto; padding: 32px 36px 48px;
+  }
+  #snagback-root.mode-pc .reminder-list {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  #snagback-root.mode-pc .examples { margin-bottom: 24px; }
+  #snagback-root.mode-pc .hero-wrap { padding: 20px 22px; }
+
+  @media (max-width: 480px) {
+    #snagback-root { padding: 0; }
+    #snagback-root.mode-mobile .device-mockup {
+      width: 100%; height: 100vh; border-radius: 0; border: none; box-shadow: none;
+    }
+    #snagback-root.mode-mobile .device-mockup::before { display: none; }
+    #snagback-root.mode-mobile .phone { padding-top: 22px; }
+    .view-toggle-btn { top: 10px; right: 10px; }
+  }
+
+  .level-toast {
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--ink); color: #0A0A0A; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 600;
+    padding: 10px 20px; border-radius: 30px; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000; white-space: nowrap;
+  }
+  .level-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<div id="snagback-root">
+
+  <!-- Health disclaimer -->
+  <div class="onboarding-overlay" id="disclaimer-overlay">
+    <div class="onboarding-sheet">
+      <div class="onboarding-icon">⚠️</div>
+      <h2 class="onboarding-title">Before you start</h2>
+      <p class="onboarding-copy" style="min-height: auto;">Snagback is a reminder tool. It is not a medical device, and it does not diagnose, treat, or cure ADHD, autism, or any other condition, in any way, shape, or form. It's here to help you remember things — nothing more. If you have concerns about your health, please speak with a doctor or qualified professional.</p>
+      <button class="onboarding-next" id="disclaimer-ack-btn" style="width: 100%; margin-top: 4px;">I understand</button>
+    </div>
+  </div>
+
+  <!-- First-run onboarding -->
+  <div class="onboarding-overlay" id="onboarding-overlay" style="display:none;">
+    <div class="onboarding-sheet">
+      <div class="onboarding-slide" id="onboarding-slide">
+        <div class="onboarding-icon">⏰</div>
+        <h2 class="onboarding-title">Say it plainly</h2>
+        <p class="onboarding-copy">Type or speak "remind me to call mum in 1 hour" — no menus, no date pickers. Snagback figures out the time.</p>
+      </div>
+      <div class="onboarding-dots" id="onboarding-dots">
+        <span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="onboarding-actions">
+        <button class="onboarding-skip" id="onboarding-skip">Skip</button>
+        <button class="onboarding-next" id="onboarding-next">Next</button>
+      </div>
+    </div>
+  </div>
+  <button class="view-toggle-btn" id="view-toggle-btn">🖥️ PC view</button>
+
+  <div class="device-mockup" id="device-mockup">
+  <div class="phone">
+
+    <div class="top-bar">
+      <div class="brand">
+        <div class="brand-mark" id="brand-mark"></div>
+        <h1 class="title">Snagback</h1>
+      </div>
+      <div class="top-actions">
+        <div class="stat-pill" id="streak-pill"><span class="flame">🔥</span><span id="streak-count">0</span></div>
+        <button class="settings-btn" id="settings-open-btn" aria-label="Settings">⚙</button>
+      </div>
+    </div>
+
+    <p class="subtitle">Say it plainly. It won't let you forget — and it keeps score.</p>
+
+    <!-- Hero: next-up countdown ring -->
+    <div class="hero-wrap" id="hero-wrap">
+      <svg class="hero-ring-svg" width="64" height="64" viewBox="0 0 64 64">
+        <circle class="hero-ring-track" cx="32" cy="32" r="26"></circle>
+        <circle class="hero-ring-fill" id="hero-ring-fill" cx="32" cy="32" r="26" stroke-dasharray="163.36" stroke-dashoffset="163.36"></circle>
+        <text class="hero-ring-label" id="hero-ring-label" x="32" y="33">–</text>
+      </svg>
+      <div class="hero-body">
+        <div class="hero-label" id="hero-label">Next up</div>
+        <div class="hero-task" id="hero-task">Nothing snagged yet</div>
+        <div class="hero-sub" id="hero-sub">Add one below to start your ring</div>
+      </div>
+    </div>
+
+    <div class="notif-prompt" id="notif-prompt" style="display:none;">
+      <div class="notif-prompt-icon">🔔</div>
+      <div class="notif-prompt-body">
+        <div class="notif-prompt-title">Get real notifications</div>
+        <div class="notif-prompt-sub">So Snagback can alert you even if this tab isn't in front</div>
+      </div>
+      <button class="notif-prompt-btn" id="notif-prompt-enable">Enable</button>
+      <button class="notif-prompt-dismiss" id="notif-prompt-dismiss" aria-label="Dismiss">✕</button>
+    </div>
+
+    <div class="level-bar-wrap">
+      <div class="level-bar-label">
+        <span id="level-label">Level 1</span>
+        <span id="xp-label">0 / 50 XP</span>
+      </div>
+      <div class="level-bar-track"><div class="level-bar-fill" id="level-bar-fill" style="width:0%"></div></div>
+      <div class="badge-row" id="badge-row"></div>
+    </div>
+
+    <div class="input-wrap">
+      <input id="snagback-input" type="text" placeholder="remind me to take pills in 20 minutes" autocomplete="off" />
+      <button class="mic-btn" id="mic-btn" title="Voice input" aria-label="Voice input">🎙️</button>
+      <button class="add-btn" id="add-btn" title="Add reminder" aria-label="Add reminder">→</button>
+    </div>
+    <div class="parse-preview empty-hint" id="parse-preview">type or speak it — I'll figure out the time</div>
+
+    <div class="examples">
+      <button class="example-chip" data-text="remind me to drink water every day at 9am">water every day at 9am</button>
+    </div>
+
+    <div class="toolbar-row">
+      <button class="sound-toggle" id="sound-toggle">🔈 sound off</button>
+    </div>
+
+    <div class="section-label">Your reminders</div>
+    <div id="list-container">
+      <div class="empty-state" id="empty-state">Nothing snagged yet.<br>Add one above — every one you catch earns XP.</div>
+      <div class="reminder-list" id="reminder-list" style="display:none;"></div>
+    </div>
+
+    <div class="donate-section">
+      <p class="donate-title">Support Snagback</p>
+      <p class="donate-sub">If this has helped you, you can chip in. Donations go toward keeping this app running and support future apps I build.</p>
+
+      <div class="donate-presets" id="donate-presets">
+        <button class="donate-chip" data-amount="3">€3</button>
+        <button class="donate-chip" data-amount="5">€5</button>
+        <button class="donate-chip" data-amount="10">€10</button>
+        <button class="donate-chip" data-amount="25">€25</button>
+      </div>
+      <div class="donate-custom-row">
+        <span class="donate-custom-symbol">€</span>
+        <input id="donate-custom-input" type="number" min="1" step="1" placeholder="custom amount" />
+      </div>
+      <button class="donate-give-btn" id="donate-give-btn">Give</button>
+      <div class="donate-status" id="donate-status"></div>
+
+      <details class="donate-setup">
+        <summary>set up your donation link</summary>
+        <div class="donate-setup-body">
+          <p class="donate-setup-copy">Paste a link from PayPal.me, Ko-fi, or Buy Me a Coffee. The buttons above will open it (with the amount added, where the service supports it).</p>
+          <div class="donate-link-row">
+            <input id="donate-link-input" type="url" placeholder="https://paypal.me/yourname" />
+            <button class="donate-link-save" id="donate-link-save">Save</button>
+          </div>
+        </div>
+      </details>
+
+      <div class="disclosure">This demo only links out to a donation page you set up yourself — no payment is handled here. Since this is personal support rather than a registered charity, avoid language implying tax-deductibility, and be clear on your donate page that funds go toward app upkeep and future development.</div>
+    </div>
+
+    <div class="suggest-section">
+      <p class="donate-title">Suggestions</p>
+      <p class="donate-sub">Got an idea for Snagback, or for another app you'd want me to build? Drop it here.</p>
+      <textarea id="suggest-input" class="suggest-input" placeholder="e.g. a widget for the home screen, a body-doubling mode, an app for..." rows="3"></textarea>
+      <button class="donate-give-btn" id="suggest-submit-btn">Send suggestion</button>
+      <div class="donate-status" id="suggest-status"></div>
+
+      <div class="suggest-list-wrap">
+        <p class="suggest-list-label">Recent suggestions</p>
+        <div id="suggest-list" class="suggest-list"></div>
+      </div>
+      <div class="disclosure">Suggestions here are stored so you can test the flow — a shipped app would route these straight to you privately instead of showing them in-app.</div>
+    </div>
+
+    <p class="disclaimer-line">Snagback is a personal productivity tool, not a medical device, and isn't a substitute for professional care.</p>
+    <div class="legal-links">
+      <button class="legal-link-btn" id="privacy-link-btn">Privacy</button>
+      <button class="legal-link-btn" id="terms-link-btn">Terms</button>
+    </div>
+
+    <p class="footnote">Prototype build — visual + sound nags run while this tab is open. A shipped app would move delivery to real push/SMS so it works with the app closed.</p>
+  </div>
+  </div>
+
+  <!-- Legal modal -->
+  <div class="legal-overlay" id="legal-overlay">
+    <div class="legal-sheet">
+      <h3 id="legal-title">Privacy</h3>
+      <div id="legal-body">
+        <p>Placeholder text for testing. This is not a real privacy policy.</p>
+      </div>
+      <button class="legal-close-btn" id="legal-close-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Settings drawer -->
+  <div class="settings-overlay" id="settings-overlay">
+    <div class="settings-sheet">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="settings-close" id="settings-close-btn" aria-label="Close settings">✕</button>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Sound</div>
+          <div class="settings-row-sub">Chimes on catch, beeps on nag</div>
+        </div>
+        <button class="switch" id="settings-sound-switch"><span class="switch-knob"></span></button>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Vibration</div>
+          <div class="settings-row-sub">Buzzes your phone when something's due</div>
+        </div>
+        <button class="switch" id="settings-vibrate-switch"><span class="switch-knob"></span></button>
+      </div>
+
+      <div class="settings-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+        <div>
+          <div class="settings-row-label">Nag intensity</div>
+          <div class="settings-row-sub">How often it re-alerts you once something's overdue</div>
+        </div>
+        <div class="intensity-group" id="intensity-group">
+          <button class="intensity-btn" data-intensity="chill">Chill</button>
+          <button class="intensity-btn" data-intensity="normal">Normal</button>
+          <button class="intensity-btn" data-intensity="aggressive">Won't quit</button>
+        </div>
+      </div>
+
+      <button class="settings-danger" id="settings-clear-btn">Delete all my data (reminders &amp; progress)</button>
+    </div>
+  </div>
+
+  <div class="undo-toast" id="undo-toast">
+    <span id="undo-toast-text">Marked done</span>
+    <button class="undo-btn" id="undo-btn">Undo</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'snagback-reminders-v1';
+  const STATS_KEY = 'snagback-stats-v1';
+  const SETTINGS_KEY = 'snagback-settings-v1';
+
+  let reminders = [];
+  let stats = { xp: 0, streak: 0, caught: 0, badges: [] };
+  let settings = { sound: false, vibrate: true, intensity: 'normal' };
+  let audioCtx = null;
+  let lastAcknowledged = null;
+  let undoTimer = null;
+
+  const CATEGORY_ICONS = [
+    { keywords: ['pill', 'medicine', 'medication', 'meds', 'dose', 'vitamin'], icon: '💊' },
+    { keywords: ['call', 'phone', 'ring'], icon: '📞' },
+    { keywords: ['water', 'drink', 'hydrate'], icon: '💧' },
+    { keywords: ['eat', 'lunch', 'dinner', 'breakfast', 'snack', 'meal'], icon: '🍽️' },
+    { keywords: ['laundry', 'washing', 'dryer'], icon: '🧺' },
+    { keywords: ['meeting', 'call', 'zoom', 'appointment'], icon: '📅' },
+    { keywords: ['gym', 'workout', 'exercise', 'run'], icon: '🏋️' },
+    { keywords: ['bill', 'pay', 'invoice', 'rent'], icon: '💳' },
+    { keywords: ['email', 'message', 'reply', 'text'], icon: '✉️' },
+    { keywords: ['sleep', 'bed', 'nap'], icon: '🛏️' },
+    { keywords: ['clean', 'tidy', 'dishes'], icon: '🧹' },
+  ];
+  function iconFor(text) {
+    const lower = text.toLowerCase();
+    for (const cat of CATEGORY_ICONS) {
+      if (cat.keywords.some(k => lower.includes(k))) return cat.icon;
+    }
+    return '⏰';
+  }
+
+  const BADGES = [
+    { id: 'first', label: '🎯 First catch', check: s => s.caught >= 1 },
+    { id: 'streak3', label: '🔥 3-streak', check: s => s.streak >= 3 },
+    { id: 'streak7', label: '⚡ 7-streak', check: s => s.streak >= 7 },
+    { id: 'caught10', label: '🏅 10 caught', check: s => s.caught >= 10 },
+    { id: 'caught50', label: '🏆 50 caught', check: s => s.caught >= 50 },
+    { id: 'level5', label: '⭐ Level 5', check: s => Math.floor(s.xp / 50) + 1 >= 5 },
+  ];
+
+  const input = document.getElementById('snagback-input');
+  const preview = document.getElementById('parse-preview');
+  const addBtn = document.getElementById('add-btn');
+  const micBtn = document.getElementById('mic-btn');
+  const list = document.getElementById('reminder-list');
+  const emptyState = document.getElementById('empty-state');
+  const soundToggle = document.getElementById('sound-toggle');
+  const root = document.getElementById('snagback-root');
+  const brandMark = document.getElementById('brand-mark');
+  const streakCount = document.getElementById('streak-count');
+  const streakPill = document.getElementById('streak-pill');
+  const levelLabel = document.getElementById('level-label');
+  const xpLabel = document.getElementById('xp-label');
+  const levelBarFill = document.getElementById('level-bar-fill');
+  const badgeRow = document.getElementById('badge-row');
+  const heroWrap = document.getElementById('hero-wrap');
+  const heroRingFill = document.getElementById('hero-ring-fill');
+  const heroRingLabel = document.getElementById('hero-ring-label');
+  const heroTask = document.getElementById('hero-task');
+  const heroSub = document.getElementById('hero-sub');
+  const heroLabel = document.getElementById('hero-label');
+  const undoToast = document.getElementById('undo-toast');
+  const undoToastText = document.getElementById('undo-toast-text');
+  const undoBtn = document.getElementById('undo-btn');
+
+  const XP_PER_LEVEL = 50;
+  const RING_CIRC = 2 * Math.PI * 26;
+
+  function parseReminder(text) {
+    const now = new Date();
+    let recurring = null;
+    let match;
+
+    match = text.match(/every\s+day\s+at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (match) {
+      let h = parseInt(match[1], 10);
+      const m = match[2] ? parseInt(match[2], 10) : 0;
+      const ampm = match[3] ? match[3].toLowerCase() : null;
+      if (ampm === 'pm' && h < 12) h += 12;
+      if (ampm === 'am' && h === 12) h = 0;
+      const target = new Date(now);
+      target.setHours(h, m, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 1);
+      recurring = { type: 'daily', hour: h, minute: m };
+      return { when: target, recurring };
+    }
+
+    match = text.match(/tomorrow\s+at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (match) {
+      let h = parseInt(match[1], 10);
+      const m = match[2] ? parseInt(match[2], 10) : 0;
+      const ampm = match[3] ? match[3].toLowerCase() : null;
+      if (ampm === 'pm' && h < 12) h += 12;
+      if (ampm === 'am' && h === 12) h = 0;
+      const target = new Date(now);
+      target.setDate(target.getDate() + 1);
+      target.setHours(h, m, 0, 0);
+      return { when: target, recurring: null };
+    }
+
+    match = text.match(/in\s+(\d+)\s*(second|sec|minute|min|hour|hr)s?/i);
+    if (match) {
+      const amount = parseInt(match[1], 10);
+      const unit = match[2].toLowerCase();
+      let ms = 0;
+      if (unit.startsWith('sec')) ms = amount * 1000;
+      else if (unit.startsWith('min')) ms = amount * 60 * 1000;
+      else if (unit.startsWith('hour') || unit.startsWith('hr')) ms = amount * 60 * 60 * 1000;
+      return { when: new Date(now.getTime() + ms), recurring: null };
+    }
+
+    match = text.match(/at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i);
+    if (match) {
+      let h = parseInt(match[1], 10);
+      const m = match[2] ? parseInt(match[2], 10) : 0;
+      const ampm = match[3] ? match[3].toLowerCase() : null;
+      if (ampm === 'pm' && h < 12) h += 12;
+      if (ampm === 'am' && h === 12) h = 0;
+      const target = new Date(now);
+      target.setHours(h, m, 0, 0);
+      if (target <= now) target.setDate(target.getDate() + 1);
+      return { when: target, recurring: null };
+    }
+
+    return { when: new Date(now.getTime() + 10 * 60 * 1000), recurring: null };
+  }
+
+  function stripToTask(text) {
+    return text
+      .replace(/^remind me to\s+/i, '')
+      .replace(/\s*every\s+day\s+at\s+\d{1,2}(:\d{2})?\s*(am|pm)?/i, '')
+      .replace(/\s*tomorrow\s+at\s+\d{1,2}(:\d{2})?\s*(am|pm)?/i, '')
+      .replace(/\s*in\s+\d+\s*(second|sec|minute|min|hour|hr)s?/i, '')
+      .replace(/\s*at\s+\d{1,2}(:\d{2})?\s*(am|pm)?/i, '')
+      .trim() || text.trim();
+  }
+
+  function updatePreview() {
+    const val = input.value.trim();
+    if (!val) {
+      preview.textContent = "type or speak it — I'll figure out the time";
+      preview.classList.add('empty-hint');
+      return;
+    }
+    const { when, recurring } = parseReminder(val);
+    preview.classList.remove('empty-hint');
+    const timeStr = when.toLocaleString([], {hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric'});
+    preview.textContent = recurring ? ('→ ' + timeStr + ' · repeats daily') : ('→ ' + timeStr);
+  }
+
+  function fmtCountdown(ms) {
+    if (ms <= 0) return 'now';
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const sec = s % 60;
+    if (h > 0) return h + 'h ' + m + 'm';
+    if (m > 0) return m + 'm ' + sec + 's';
+    return sec + 's';
+  }
+  function fmtCountdownShort(ms) {
+    if (ms <= 0) return 'now';
+    const s = Math.floor(ms / 1000);
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    if (h > 0) return h + 'h';
+    if (m > 0) return m + 'm';
+    return s + 's';
+  }
+
+  function beep(freq) {
+    if (!settings.sound) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.value = freq || 660;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+    } catch (e) {}
+  }
+  function chime() {
+    if (!settings.sound) return;
+    beep(660); setTimeout(() => beep(880), 90); setTimeout(() => beep(1050), 180);
+  }
+  function vibrate(pattern) {
+    if (!settings.vibrate) return;
+    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+  }
+
+  async function saveReminders() { try { await window.storage.set(STORAGE_KEY, JSON.stringify(reminders), false); } catch (e) {} }
+  async function saveStats() { try { await window.storage.set(STATS_KEY, JSON.stringify(stats), false); } catch (e) {} }
+  async function saveSettings() { try { await window.storage.set(SETTINGS_KEY, JSON.stringify(settings), false); } catch (e) {} }
+
+  async function loadAll() {
+    try { const r = await window.storage.get(STORAGE_KEY, false); if (r && r.value) reminders = JSON.parse(r.value); } catch (e) { reminders = []; }
+    try { const s = await window.storage.get(STATS_KEY, false); if (s && s.value) stats = Object.assign({ xp: 0, streak: 0, caught: 0, badges: [] }, JSON.parse(s.value)); } catch (e) {}
+    try { const st = await window.storage.get(SETTINGS_KEY, false); if (st && st.value) settings = Object.assign({ sound: false, vibrate: true, intensity: 'normal' }, JSON.parse(st.value)); } catch (e) {}
+  }
+
+  function addReminder(rawText) {
+    const text = rawText.trim();
+    if (!text) return;
+    const { when, recurring } = parseReminder(text);
+    const task = stripToTask(text);
+    reminders.push({
+      id: Date.now() + Math.random(),
+      task, due: when.getTime(), created: Date.now(), lastNag: 0,
+      recurring, icon: iconFor(task)
+    });
+    saveReminders();
+    render();
+  }
+
+  function spawnConfetti(x, y) {
+    const colors = ['#FFB454', '#FFD166', '#FF6B54', '#F5F5F3'];
+    for (let i = 0; i < 14; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'burst-piece';
+      piece.style.background = colors[i % colors.length];
+      piece.style.left = x + 'px'; piece.style.top = y + 'px';
+      document.body.appendChild(piece);
+      const angle = (Math.PI * 2 * i) / 14;
+      const dist = 60 + Math.random() * 50;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 30;
+      piece.animate([
+        { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy + 90}px) rotate(${360 + Math.random()*180}deg)`, opacity: 0 }
+      ], { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(.2,.6,.4,1)' });
+      setTimeout(() => piece.remove(), 1100);
+    }
+  }
+
+  function showLevelToast(text) {
+    const toast = document.createElement('div');
+    toast.className = 'level-toast';
+    toast.textContent = text;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 350); }, 1600);
+  }
+
+  function checkBadges() {
+    const newly = [];
+    BADGES.forEach(b => {
+      if (!stats.badges.includes(b.id) && b.check(stats)) {
+        stats.badges.push(b.id);
+        newly.push(b);
+      }
+    });
+    return newly;
+  }
+
+  function updateXpBar() {
+    const level = Math.floor(stats.xp / XP_PER_LEVEL) + 1;
+    const within = stats.xp % XP_PER_LEVEL;
+    levelLabel.textContent = 'Level ' + level;
+    xpLabel.textContent = within + ' / ' + XP_PER_LEVEL + ' XP';
+    levelBarFill.style.width = (within / XP_PER_LEVEL * 100) + '%';
+    streakCount.textContent = stats.streak;
+    streakPill.classList.toggle('streak-hot', stats.streak >= 3);
+
+    badgeRow.innerHTML = stats.badges.map(id => {
+      const b = BADGES.find(x => x.id === id);
+      return b ? `<span class="badge-chip">${b.label}</span>` : '';
+    }).join('');
+  }
+
+  function snooze(id, minutes) {
+    const r = reminders.find(x => x.id === id);
+    if (!r) return;
+    r.due = Date.now() + minutes * 60 * 1000;
+    r.created = Date.now();
+    r.lastNag = 0;
+    saveReminders();
+    render();
+  }
+
+  function deleteReminder(id) {
+    reminders = reminders.filter(x => x.id !== id);
+    saveReminders();
+    render();
+  }
+
+  function scheduleNextRecurrence(r) {
+    if (!r.recurring) return null;
+    if (r.recurring.type === 'daily') {
+      const next = new Date();
+      next.setHours(r.recurring.hour, r.recurring.minute, 0, 0);
+      next.setDate(next.getDate() + 1);
+      return next.getTime();
+    }
+    return null;
+  }
+
+  function acknowledge(id, evt) {
+    const r = reminders.find(x => x.id === id);
+    if (!r) return;
+    const now = Date.now();
+    const overdueMs = now - r.due;
+    const prevLevel = Math.floor(stats.xp / XP_PER_LEVEL);
+
+    let gained = 10;
+    if (overdueMs <= 0) gained = 15;
+    else if (overdueMs < 15000) gained = 12;
+    stats.xp += gained;
+    stats.caught += 1;
+
+    if (overdueMs < 120000) stats.streak += 1;
+    else stats.streak = 0;
+
+    const newLevel = Math.floor(stats.xp / XP_PER_LEVEL);
+    chime();
+    vibrate([40]);
+    if (evt && evt.target) {
+      const rect = evt.target.getBoundingClientRect();
+      spawnConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+    const newBadges = checkBadges();
+    if (newBadges.length) {
+      setTimeout(() => showLevelToast(newBadges[0].label + ' unlocked'), 150);
+    } else if (newLevel > prevLevel) {
+      setTimeout(() => showLevelToast('⭐ Level ' + (newLevel + 1) + ' — nice catch'), 150);
+    } else {
+      showLevelToast('+' + gained + ' XP');
+    }
+
+    // handle recurrence: remove current, optionally requeue
+    const nextDue = scheduleNextRecurrence(r);
+    reminders = reminders.filter(x => x.id !== id);
+    if (nextDue) {
+      reminders.push({ id: Date.now() + Math.random(), task: r.task, due: nextDue, created: Date.now(), lastNag: 0, recurring: r.recurring, icon: r.icon });
+    }
+
+    saveReminders();
+    saveStats();
+    updateXpBar();
+    render();
+
+    lastAcknowledged = { reminder: r, gained, prevStreak: stats.streak - (overdueMs < 120000 ? 1 : -stats.streak) };
+    showUndoToast(r.task);
+  }
+
+  function showUndoToast(task) {
+    clearTimeout(undoTimer);
+    undoToastText.textContent = '"' + (task.length > 22 ? task.slice(0, 22) + '…' : task) + '" marked done';
+    undoToast.classList.add('show');
+    undoTimer = setTimeout(() => { undoToast.classList.remove('show'); lastAcknowledged = null; }, 5000);
+  }
+
+  undoBtn.addEventListener('click', () => {
+    if (!lastAcknowledged) return;
+    const r = lastAcknowledged.reminder;
+    stats.xp = Math.max(0, stats.xp - lastAcknowledged.gained);
+    stats.caught = Math.max(0, stats.caught - 1);
+    reminders.push({ id: r.id, task: r.task, due: r.due, created: r.created, lastNag: 0, recurring: r.recurring, icon: r.icon });
+    saveReminders(); saveStats(); updateXpBar(); render();
+    undoToast.classList.remove('show');
+    clearTimeout(undoTimer);
+    lastAcknowledged = null;
+  });
+
+  function render() {
+    if (reminders.length === 0) {
+      emptyState.style.display = 'block';
+      list.style.display = 'none';
+      root.classList.remove('alert-mode');
+      brandMark.classList.remove('hot');
+      renderHero(null);
+      return;
+    }
+    emptyState.style.display = 'none';
+    list.style.display = 'flex';
+
+    const sorted = [...reminders].sort((a, b) => a.due - b.due);
+    list.innerHTML = '';
+    let anyHot = false;
+
+    sorted.forEach(r => {
+      const now = Date.now();
+      const remaining = r.due - now;
+      const totalSpan = Math.max(r.due - r.created, 1000);
+      let cls = 'reminder-card';
+      let metaText = 'in ' + fmtCountdown(remaining);
+      let fillPct;
+
+      if (remaining <= 0) {
+        const overdue = now - r.due;
+        fillPct = 100;
+        if (overdue > 15000) { cls += ' overdue'; anyHot = true; metaText = 'still waiting — ' + fmtCountdown(overdue) + ' over'; }
+        else { cls += ' due'; anyHot = true; metaText = 'due now'; }
+      } else {
+        const elapsed = now - r.created;
+        fillPct = Math.min(100, Math.max(0, (elapsed / totalSpan) * 100));
+      }
+
+      const repeatTag = r.recurring ? '<span class="repeat-tag">↻ daily</span>' : '';
+
+      const card = document.createElement('div');
+      card.className = cls;
+      card.innerHTML = `
+        <div class="card-top">
+          <div class="cat-icon">${r.icon || '⏰'}</div>
+          <div class="reminder-body">
+            <div class="reminder-text">${escapeHtml(r.task)}</div>
+            <div class="reminder-meta"><span>${metaText}</span>${repeatTag}</div>
+          </div>
+          <div class="card-actions">
+            <button class="ack-btn" data-id="${r.id}" data-action="ack">Got it</button>
+            <div class="card-actions-row">
+              <button class="snooze-btn" data-id="${r.id}" data-action="snooze">+10m</button>
+              <button class="delete-btn" data-id="${r.id}" data-action="delete">✕</button>
+            </div>
+          </div>
+        </div>
+        <div class="time-track"><div class="time-fill" style="width:${fillPct}%"></div></div>
+      `;
+      list.appendChild(card);
+    });
+
+    list.querySelectorAll('[data-action="ack"]').forEach(btn => btn.addEventListener('click', (e) => acknowledge(parseFloat(btn.dataset.id), e)));
+    list.querySelectorAll('[data-action="snooze"]').forEach(btn => btn.addEventListener('click', () => snooze(parseFloat(btn.dataset.id), 10)));
+    list.querySelectorAll('[data-action="delete"]').forEach(btn => btn.addEventListener('click', () => deleteReminder(parseFloat(btn.dataset.id))));
+
+    root.classList.toggle('alert-mode', anyHot);
+    brandMark.classList.toggle('hot', anyHot);
+
+    renderHero(sorted[0]);
+  }
+
+  function renderHero(nextReminder) {
+    if (!nextReminder) {
+      heroWrap.classList.remove('hero-hot');
+      heroRingFill.style.strokeDasharray = RING_CIRC;
+      heroRingFill.style.strokeDashoffset = RING_CIRC;
+      heroRingLabel.textContent = '–';
+      heroLabel.textContent = 'Next up';
+      heroTask.textContent = 'Nothing snagged yet';
+      heroSub.textContent = 'Add one below to start your ring';
+      return;
+    }
+    const now = Date.now();
+    const remaining = nextReminder.due - now;
+    const totalSpan = Math.max(nextReminder.due - nextReminder.created, 1000);
+    const elapsed = now - nextReminder.created;
+    const fractionLeft = remaining <= 0 ? 0 : Math.max(0, Math.min(1, 1 - elapsed / totalSpan));
+
+    heroRingFill.style.strokeDasharray = RING_CIRC;
+    heroRingFill.style.strokeDashoffset = RING_CIRC * (1 - fractionLeft);
+    heroRingLabel.textContent = remaining <= 0 ? '!' : fmtCountdownShort(remaining);
+
+    const isHot = remaining <= 0;
+    heroWrap.classList.toggle('hero-hot', isHot);
+    heroLabel.textContent = isHot ? 'Waiting on you' : 'Next up';
+    heroTask.textContent = nextReminder.task;
+    heroSub.textContent = isHot ? 'Overdue ' + fmtCountdown(now - nextReminder.due) : 'in ' + fmtCountdown(remaining);
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function tick() {
+    const now = Date.now();
+    let changed = false;
+    const intervals = { chill: 30000, normal: 15000, aggressive: 6000 };
+    reminders.forEach(r => {
+      const remaining = r.due - now;
+      if (remaining <= 0) {
+        const overdue = now - r.due;
+        const base = intervals[settings.intensity] || 15000;
+        const interval = overdue < 120000 ? base : Math.max(6000, base - 5000);
+        if (now - r.lastNag >= interval) {
+          r.lastNag = now;
+          beep(overdue > 30000 ? 520 : 660);
+          vibrate(overdue > 30000 ? [60, 40, 60] : [50]);
+          changed = true;
+        }
+        if (!notifiedIds.has(r.id)) {
+          notifiedIds.add(r.id);
+          fireBrowserNotification(r.task);
+        }
+      }
+    });
+    render();
+    if (changed) saveReminders();
+  }
+
+  input.addEventListener('input', updatePreview);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { addReminder(input.value); input.value = ''; updatePreview(); } });
+  addBtn.addEventListener('click', () => { addReminder(input.value); input.value = ''; updatePreview(); });
+
+  document.querySelectorAll('.example-chip').forEach(chip => {
+    chip.addEventListener('click', () => { input.value = chip.dataset.text; updatePreview(); input.focus(); });
+  });
+
+  soundToggle.addEventListener('click', () => {
+    settings.sound = !settings.sound;
+    soundToggle.textContent = settings.sound ? '🔊 sound on' : '🔈 sound off';
+    soundToggle.classList.toggle('on', settings.sound);
+    syncSettingsUI();
+    saveSettings();
+    if (settings.sound) { try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); beep(660); } catch (e) {} }
+  });
+
+  let recognizing = false;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    micBtn.addEventListener('click', () => {
+      if (recognizing) return;
+      recognizing = true; micBtn.classList.add('listening'); recognition.start();
+    });
+    recognition.onresult = (event) => { input.value = event.results[0][0].transcript; updatePreview(); };
+    recognition.onend = () => { recognizing = false; micBtn.classList.remove('listening'); };
+    recognition.onerror = () => { recognizing = false; micBtn.classList.remove('listening'); };
+  } else {
+    micBtn.addEventListener('click', () => {
+      preview.textContent = 'voice input not supported in this browser — try typing instead';
+      preview.classList.remove('empty-hint');
+    });
+  }
+
+  /* ---- Settings drawer wiring ---- */
+  const settingsOverlay = document.getElementById('settings-overlay');
+  const settingsOpenBtn = document.getElementById('settings-open-btn');
+  const settingsCloseBtn = document.getElementById('settings-close-btn');
+  const soundSwitch = document.getElementById('settings-sound-switch');
+  const vibrateSwitch = document.getElementById('settings-vibrate-switch');
+  const intensityGroup = document.getElementById('intensity-group');
+  const clearBtn = document.getElementById('settings-clear-btn');
+
+  function syncSettingsUI() {
+    soundSwitch.classList.toggle('on', settings.sound);
+    vibrateSwitch.classList.toggle('on', settings.vibrate);
+    soundToggle.textContent = settings.sound ? '🔊 sound on' : '🔈 sound off';
+    soundToggle.classList.toggle('on', settings.sound);
+    intensityGroup.querySelectorAll('.intensity-btn').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.intensity === settings.intensity);
+    });
+  }
+
+  settingsOpenBtn.addEventListener('click', () => settingsOverlay.classList.add('open'));
+  settingsCloseBtn.addEventListener('click', () => settingsOverlay.classList.remove('open'));
+  settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) settingsOverlay.classList.remove('open'); });
+
+  soundSwitch.addEventListener('click', () => {
+    settings.sound = !settings.sound;
+    syncSettingsUI(); saveSettings();
+    if (settings.sound) { try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); beep(660); } catch (e) {} }
+  });
+  vibrateSwitch.addEventListener('click', () => {
+    settings.vibrate = !settings.vibrate;
+    syncSettingsUI(); saveSettings();
+    vibrate([40]);
+  });
+  intensityGroup.querySelectorAll('.intensity-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      settings.intensity = btn.dataset.intensity;
+      syncSettingsUI(); saveSettings();
+    });
+  });
+  clearBtn.addEventListener('click', () => {
+    reminders = [];
+    stats = { xp: 0, streak: 0, caught: 0, badges: [] };
+    saveReminders(); saveStats(); updateXpBar(); render();
+    settingsOverlay.classList.remove('open');
+  });
+
+  /* ---- Donate ---- */
+  const donatePresets = document.getElementById('donate-presets');
+  const donateGiveBtn = document.getElementById('donate-give-btn');
+  const donateStatus = document.getElementById('donate-status');
+  const donateLinkInput = document.getElementById('donate-link-input');
+  const donateLinkSave = document.getElementById('donate-link-save');
+  const donateCustomInput = document.getElementById('donate-custom-input');
+  const donateCustomRow = donateCustomInput.closest('.donate-custom-row');
+  const DONATE_LINK_KEY = 'snagback-donate-link-v1';
+  let donateLink = '';
+  let selectedAmount = 5;
+
+  function buildDonateUrl(link, amount) {
+    try {
+      const url = new URL(link);
+      if (url.hostname.includes('paypal.me')) return link.replace(/\/$/, '') + '/' + amount + 'EUR';
+      if (url.hostname.includes('ko-fi.com')) { url.searchParams.set('amount', amount); return url.toString(); }
+      if (url.hostname.includes('buymeacoffee.com')) return link;
+      url.searchParams.set('amount', amount);
+      return url.toString();
+    } catch (e) { return link; }
+  }
+
+  donatePresets.querySelectorAll('.donate-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      donatePresets.querySelectorAll('.donate-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      selectedAmount = chip.dataset.amount;
+      donateCustomInput.value = '';
+      donateCustomRow.classList.remove('active');
+    });
+  });
+  const firstChip = donatePresets.querySelector('.donate-chip[data-amount="5"]');
+  if (firstChip) firstChip.classList.add('selected');
+
+  donateCustomInput.addEventListener('input', () => {
+    const val = donateCustomInput.value.trim();
+    if (val && parseFloat(val) > 0) {
+      donatePresets.querySelectorAll('.donate-chip').forEach(c => c.classList.remove('selected'));
+      donateCustomRow.classList.add('active');
+      selectedAmount = val;
+    } else {
+      donateCustomRow.classList.remove('active');
+    }
+  });
+
+  donateGiveBtn.addEventListener('click', () => {
+    if (!donateLink) { donateStatus.textContent = 'add your donation link below first'; donateStatus.style.color = 'var(--beacon-hot)'; return; }
+    window.open(buildDonateUrl(donateLink, selectedAmount), '_blank');
+    donateStatus.textContent = 'opening donation page…';
+    donateStatus.style.color = 'var(--ink-soft)';
+  });
+
+  donateLinkSave.addEventListener('click', async () => {
+    const val = donateLinkInput.value.trim();
+    if (!val || !/^https?:\/\//i.test(val)) { donateStatus.textContent = 'paste a full link starting with https://'; donateStatus.style.color = 'var(--beacon-hot)'; return; }
+    donateLink = val;
+    try { await window.storage.set(DONATE_LINK_KEY, donateLink, false); } catch (e) {}
+    donateStatus.textContent = 'saved — the Give button will open this link';
+    donateStatus.style.color = 'var(--ink-soft)';
+  });
+
+  (async function loadDonateLink() {
+    try { const res = await window.storage.get(DONATE_LINK_KEY, false); if (res && res.value) { donateLink = res.value; donateLinkInput.value = donateLink; } } catch (e) {}
+  })();
+
+  /* ---- Suggestions ---- */
+  const suggestInput = document.getElementById('suggest-input');
+  const suggestSubmitBtn = document.getElementById('suggest-submit-btn');
+  const suggestStatus = document.getElementById('suggest-status');
+  const suggestList = document.getElementById('suggest-list');
+  const SUGGESTIONS_KEY = 'snagback-suggestions-v1';
+
+  function renderSuggestions(items) {
+    if (!items || items.length === 0) { suggestList.innerHTML = '<div class="suggest-empty">Nothing yet — be the first.</div>'; return; }
+    const sorted = [...items].sort((a, b) => b.ts - a.ts).slice(0, 10);
+    suggestList.innerHTML = sorted.map(item => `
+      <div class="suggest-item">
+        <div>${escapeHtml(item.text)}</div>
+        <div class="suggest-item-time">${new Date(item.ts).toLocaleString([], {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</div>
+      </div>
+    `).join('');
+  }
+
+  async function loadSuggestions() {
+    try {
+      const res = await window.storage.get(SUGGESTIONS_KEY, true);
+      const items = res && res.value ? JSON.parse(res.value) : [];
+      renderSuggestions(items);
+      return items;
+    } catch (e) { renderSuggestions([]); return []; }
+  }
+
+  suggestSubmitBtn.addEventListener('click', async () => {
+    const text = suggestInput.value.trim();
+    if (!text) { suggestStatus.textContent = 'write something first'; suggestStatus.style.color = 'var(--beacon-hot)'; return; }
+    const items = await loadSuggestions();
+    items.push({ text, ts: Date.now() });
+    try {
+      await window.storage.set(SUGGESTIONS_KEY, JSON.stringify(items), true);
+      suggestStatus.textContent = 'sent — thank you';
+      suggestStatus.style.color = 'var(--ink-soft)';
+      suggestInput.value = '';
+      renderSuggestions(items);
+    } catch (e) { suggestStatus.textContent = 'could not save right now — try again'; suggestStatus.style.color = 'var(--beacon-hot)'; }
+  });
+
+  loadSuggestions();
+
+  /* ---- Health disclaimer (shown once, before onboarding) ---- */
+  const DISCLAIMER_KEY = 'snagback-disclaimer-ack-v1';
+  const disclaimerOverlay = document.getElementById('disclaimer-overlay');
+  const disclaimerAckBtn = document.getElementById('disclaimer-ack-btn');
+
+  async function acknowledgeDisclaimer() {
+    disclaimerOverlay.classList.add('hidden');
+    setTimeout(() => { disclaimerOverlay.style.display = 'none'; }, 300);
+    try { await window.storage.set(DISCLAIMER_KEY, 'true', false); } catch (e) {}
+    onboardingOverlay.style.display = 'flex';
+    maybeCheckOnboarding();
+  }
+  disclaimerAckBtn.addEventListener('click', acknowledgeDisclaimer);
+
+  async function maybeShowDisclaimer() {
+    try {
+      const res = await window.storage.get(DISCLAIMER_KEY, false);
+      if (res && res.value === 'true') {
+        disclaimerOverlay.style.display = 'none';
+        onboardingOverlay.style.display = 'flex';
+        maybeCheckOnboarding();
+        return;
+      }
+    } catch (e) {}
+    disclaimerOverlay.style.display = 'flex';
+  }
+
+  /* ---- Onboarding ---- */
+  const ONBOARDING_KEY = 'snagback-onboarded-v1';
+  const onboardingOverlay = document.getElementById('onboarding-overlay');
+  const onboardingSlide = document.getElementById('onboarding-slide');
+  const onboardingDots = document.getElementById('onboarding-dots');
+  const onboardingNext = document.getElementById('onboarding-next');
+  const onboardingSkip = document.getElementById('onboarding-skip');
+
+  const ONBOARDING_STEPS = [
+    { icon: '⏰', title: 'Say it plainly', copy: 'Type or speak "remind me to call mum in 1 hour" — no menus, no date pickers. Snagback figures out the time.' },
+    { icon: '🔥', title: 'Catch it, earn it', copy: 'Every reminder you catch earns XP, builds your streak, and unlocks badges. Missing one never punishes you — it just quietly resets.' },
+    { icon: '🔔', title: 'Real alerts', copy: "Turn on notifications so Snagback can reach you even when this tab isn't in front. Fully optional, and easy to turn off in Settings." }
+  ];
+  let onboardingStep = 0;
+
+  function renderOnboardingStep() {
+    const step = ONBOARDING_STEPS[onboardingStep];
+    onboardingSlide.querySelector('.onboarding-icon').textContent = step.icon;
+    onboardingSlide.querySelector('.onboarding-title').textContent = step.title;
+    onboardingSlide.querySelector('.onboarding-copy').textContent = step.copy;
+    onboardingDots.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === onboardingStep));
+    onboardingNext.textContent = onboardingStep === ONBOARDING_STEPS.length - 1 ? "Let's go" : 'Next';
+  }
+
+  async function closeOnboarding() {
+    onboardingOverlay.classList.add('hidden');
+    setTimeout(() => { onboardingOverlay.style.display = 'none'; }, 300);
+    try { await window.storage.set(ONBOARDING_KEY, 'true', false); } catch (e) {}
+    maybeShowNotifPrompt();
+  }
+
+  onboardingNext.addEventListener('click', () => {
+    if (onboardingStep < ONBOARDING_STEPS.length - 1) {
+      onboardingStep++;
+      renderOnboardingStep();
+    } else {
+      closeOnboarding();
+    }
+  });
+  onboardingSkip.addEventListener('click', closeOnboarding);
+
+  async function maybeCheckOnboarding() {
+    try {
+      const res = await window.storage.get(ONBOARDING_KEY, false);
+      if (res && res.value === 'true') {
+        onboardingOverlay.style.display = 'none';
+        maybeShowNotifPrompt();
+      } else {
+        renderOnboardingStep();
+      }
+    } catch (e) {
+      renderOnboardingStep();
+    }
+  }
+
+  /* ---- Real browser notifications ---- */
+  const notifPrompt = document.getElementById('notif-prompt');
+  const notifPromptEnable = document.getElementById('notif-prompt-enable');
+  const notifPromptDismiss = document.getElementById('notif-prompt-dismiss');
+  const NOTIF_DISMISSED_KEY = 'snagback-notif-dismissed-v1';
+  const notifiedIds = new Set();
+
+  function notificationsSupported() {
+    return typeof window !== 'undefined' && 'Notification' in window;
+  }
+
+  async function maybeShowNotifPrompt() {
+    if (!notificationsSupported()) return;
+    if (Notification.permission === 'granted' || Notification.permission === 'denied') return;
+    try {
+      const dismissed = await window.storage.get(NOTIF_DISMISSED_KEY, false);
+      if (dismissed && dismissed.value === 'true') return;
+    } catch (e) {}
+    notifPrompt.style.display = 'flex';
+  }
+
+  notifPromptEnable.addEventListener('click', async () => {
+    if (!notificationsSupported()) {
+      notifPrompt.style.display = 'none';
+      return;
+    }
+    try {
+      const perm = await Notification.requestPermission();
+      if (perm === 'granted') {
+        new Notification('Snagback', { body: "You're set — reminders will alert you even in a background tab." });
+      }
+    } catch (e) {}
+    notifPrompt.style.display = 'none';
+  });
+
+  notifPromptDismiss.addEventListener('click', async () => {
+    notifPrompt.style.display = 'none';
+    try { await window.storage.set(NOTIF_DISMISSED_KEY, 'true', false); } catch (e) {}
+  });
+
+  function fireBrowserNotification(task) {
+    if (!notificationsSupported() || Notification.permission !== 'granted') return;
+    try {
+      new Notification('Snagback', { body: task + ' — tap to open Snagback', tag: 'snagback-nag' });
+    } catch (e) {}
+  }
+
+  /* ---- Legal modal ---- */
+  const legalOverlay = document.getElementById('legal-overlay');
+  const legalTitle = document.getElementById('legal-title');
+  const legalBody = document.getElementById('legal-body');
+  const legalCloseBtn = document.getElementById('legal-close-btn');
+  const privacyLinkBtn = document.getElementById('privacy-link-btn');
+  const termsLinkBtn = document.getElementById('terms-link-btn');
+
+  const LEGAL_CONTENT = {
+    privacy: {
+      title: 'Privacy',
+      body: `
+        <p><strong>This is placeholder text for testing the flow — not a real privacy policy.</strong></p>
+        <p>Before submitting to the App Store or Play Store, replace this with an actual hosted privacy policy covering: what data is collected (reminders, usage stats), where it's stored, whether it's shared with anyone, and how someone can request deletion of their data.</p>
+        <p>Both app stores require a working link to a real, hosted policy page — this in-app placeholder won't satisfy that requirement on its own.</p>
+      `
+    },
+    terms: {
+      title: 'Terms',
+      body: `
+        <p><strong>This is placeholder text for testing the flow — not real terms of service.</strong></p>
+        <p>Before launch, replace this with real terms covering acceptable use, that Snagback isn't a medical device, limitation of liability, and how donations/support work.</p>
+      `
+    }
+  };
+
+  function openLegal(kind) {
+    const content = LEGAL_CONTENT[kind];
+    legalTitle.textContent = content.title;
+    legalBody.innerHTML = content.body;
+    legalOverlay.classList.add('open');
+  }
+  privacyLinkBtn.addEventListener('click', () => openLegal('privacy'));
+  termsLinkBtn.addEventListener('click', () => openLegal('terms'));
+  legalCloseBtn.addEventListener('click', () => legalOverlay.classList.remove('open'));
+  legalOverlay.addEventListener('click', (e) => { if (e.target === legalOverlay) legalOverlay.classList.remove('open'); });
+
+  /* ---- View toggle (PC / Mobile preview) ---- */
+  const VIEW_MODE_KEY = 'snagback-view-mode-v1';
+  const viewToggleBtn = document.getElementById('view-toggle-btn');
+  let viewMode = 'mobile';
+
+  function applyViewMode(mode) {
+    viewMode = mode;
+    root.classList.remove('mode-mobile', 'mode-pc');
+    root.classList.add(mode === 'pc' ? 'mode-pc' : 'mode-mobile');
+    viewToggleBtn.textContent = mode === 'pc' ? '📱 Mobile view' : '🖥️ PC view';
+  }
+
+  viewToggleBtn.addEventListener('click', async () => {
+    const next = viewMode === 'pc' ? 'mobile' : 'pc';
+    applyViewMode(next);
+    try { await window.storage.set(VIEW_MODE_KEY, next, false); } catch (e) {}
+  });
+
+  (async function initViewMode() {
+    try {
+      const res = await window.storage.get(VIEW_MODE_KEY, false);
+      applyViewMode(res && res.value ? res.value : 'mobile');
+    } catch (e) {
+      applyViewMode('mobile');
+    }
+  })();
+
+  (async function init() {
+    await loadAll();
+    syncSettingsUI();
+    updateXpBar();
+    render();
+    setInterval(tick, 1000);
+    maybeShowDisclaimer();
+  })();
+})();
+</script>
